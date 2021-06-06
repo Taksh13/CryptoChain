@@ -26,7 +26,7 @@ class Block {
             timestamp = Date.now();
             hash = cryptoHash(timestamp, lastHash, data, nonce, difficulty);
 
-        } while (hash.substring(0, difficulty) != '0'.repeat(difficulty))
+        } while (hash.substring(0, difficulty) !== '0'.repeat(difficulty))
 
         return new Block({ timestamp, lastHash, data, difficulty, nonce, hash });
     }
