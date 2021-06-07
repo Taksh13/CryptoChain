@@ -53,7 +53,7 @@ describe('Blockchain', () => {
 
             describe('and the chain contains a block with an invalid field', () => {
                 it('returns false', () => {
-                    blockchain.chain[2].lastHash = 'some-bad-data';
+                    blockchain.chain[2].data = 'some-bad-and-evil-data';
 
                     expect(Blockchain.isValidChain(blockchain.chain)).toBe(false);
                 });
