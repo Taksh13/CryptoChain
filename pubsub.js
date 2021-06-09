@@ -1,0 +1,60 @@
+const { json } = require('body-parser');
+const redis = require('redis');
+
+const CHANNELS = {
+    TEST: 'TEST',
+    BLOCKCHAIN: 'BLOCKCHAIN'
+};
+
+class PubSub {
+    constructor({ blockchain }) {
+        this.blockchain = blockchain;
+
+        this.publisher = redis.createClient();
+        this.subscriber = redis.createClient();
+
+        this.subscribToChannels();
+
+        this.subscriber.on(
+            'message',
+            (channel, message) => this.handleMassage(channel, message))
+            ;
+    }
+
+    handleMassage(channel, message) {
+        console.log(`Message received. Channel:${channel}. Message: ${message}`);
+
+        const parsedMessage = JSON.parse(message);
+
+        if (channel === CHANNELS.BLOCKCHAIN) {
+            this.blockchain.replaceChain(parsedMessage);
+        }
+    }
+
+    subscribToChannels() {
+        Object.values(CHANNELS).forEach(channel => {
+            this.subscriber.subscribe(channel);
+        });
+    }
+
+    publish({ channel, message }) {
+        this.subscriber.unsubscribe(channel, () => {
+            this.publisher.publish(channel, message, () => {
+                this.subscriber.subscribe(channel);
+            });
+        });
+    }
+
+    broadcastChain() {
+        this.publish({
+            channel: CHANNELS.BLOCKCHAIN,
+            message: JSON.stringify(this.blockchain.chain)
+        });
+    }
+}
+
+module.exports = PubSub;
+
+//Cant run redis directly since its on a linux subsystem
+//npm run start-redis && 
+// "start-redis": "redis-server --daemonize yes"
