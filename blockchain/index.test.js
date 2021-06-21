@@ -1,6 +1,6 @@
-const Blockchain = require('./blockchain');
+const Blockchain = require('./index');
 const Block = require('./block');
-const cryptoHash = require('./crypto-hash');
+const cryptoHash = require('../util/crypto-hash');
 
 describe('Blockchain', () => {
     let blockchain, newChain, originalChain;
@@ -43,7 +43,7 @@ describe('Blockchain', () => {
                 blockchain.addBlock({ data: 'Battlestar Galactica' });
             });
 
-            describe('and a lastHast refernce has changed', () => {
+            describe('and a lastHash reference has changed', () => {
                 it('returns false', () => {
                     blockchain.chain[2].lastHash = 'broken-lastHash';
 
@@ -67,9 +67,9 @@ describe('Blockchain', () => {
                     const nonce = 0;
                     const data = [];
                     const difficulty = lastBlock.difficulty - 3;
-                    const hash = cryptoHash(timestamp, lastHash, data, nonce, difficulty);
+                    const hash = cryptoHash(timestamp, lastHash, difficulty, nonce, data);
                     const badBlock = new Block({
-                        timestamp, lastHash, difficulty, nonce, data
+                        timestamp, lastHash, hash, nonce, difficulty, data
                     });
 
                     blockchain.chain.push(badBlock);
@@ -81,7 +81,6 @@ describe('Blockchain', () => {
             describe('and the chain does not contain any invalid blocks', () => {
                 it('returns true', () => {
                     expect(Blockchain.isValidChain(blockchain.chain)).toBe(true);
-
                 });
             });
         });
