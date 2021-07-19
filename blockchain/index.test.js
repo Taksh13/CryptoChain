@@ -1,6 +1,6 @@
 const Blockchain = require('./index');
 const Block = require('./block');
-const { cryptoHash } = require("../util");
+const { cryptoHash } = require('../util');
 const Wallet = require('../wallet');
 const Transaction = require('../wallet/transaction');
 
@@ -14,10 +14,9 @@ describe('Blockchain', () => {
 
     originalChain = blockchain.chain;
     global.console.error = errorMock;
-
   });
 
-  it('contain a `chain` Array instance', () => {
+  it('contains a `chain` Array instance', () => {
     expect(blockchain.chain instanceof Array).toBe(true);
   });
 
@@ -29,7 +28,7 @@ describe('Blockchain', () => {
     const newData = 'foo bar';
     blockchain.addBlock({ data: newData });
 
-    expect(blockchain.chain[blockchain.chain.length - 1].data).toEqual(newData);
+    expect(blockchain.chain[blockchain.chain.length-1].data).toEqual(newData);
   });
 
   describe('isValidChain()', () => {
@@ -66,7 +65,7 @@ describe('Blockchain', () => {
 
       describe('and the chain contains a block with a jumped difficulty', () => {
         it('returns false', () => {
-          const lastBlock = blockchain.chain[blockchain.chain.length - 1];
+          const lastBlock = blockchain.chain[blockchain.chain.length-1];
           const lastHash = lastBlock.hash;
           const timestamp = Date.now();
           const nonce = 0;
@@ -103,6 +102,7 @@ describe('Blockchain', () => {
     describe('when the new chain is not longer', () => {
       beforeEach(() => {
         newChain.chain[0] = { new: 'chain' };
+
         blockchain.replaceChain(newChain.chain);
       });
 
@@ -114,6 +114,7 @@ describe('Blockchain', () => {
         expect(errorMock).toHaveBeenCalled();
       });
     });
+
     describe('when the new chain is longer', () => {
       beforeEach(() => {
         newChain.addBlock({ data: 'Bears' });
@@ -124,6 +125,7 @@ describe('Blockchain', () => {
       describe('and the chain is invalid', () => {
         beforeEach(() => {
           newChain.chain[2].hash = 'some-fake-hash';
+
           blockchain.replaceChain(newChain.chain);
         });
 
@@ -141,7 +143,7 @@ describe('Blockchain', () => {
           blockchain.replaceChain(newChain.chain);
         });
 
-        it('does replace the chain', () => {
+        it('replaces the chain', () => {
           expect(blockchain.chain).toEqual(newChain.chain);
         });
 
@@ -151,7 +153,7 @@ describe('Blockchain', () => {
       });
     });
 
-    describe('and the `validTransactions` flag is true', () => {
+    describe('and the `validateTransactions` flag is true', () => {
       it('calls validTransactionData()', () => {
         const validTransactionDataMock = jest.fn();
 
@@ -192,7 +194,7 @@ describe('Blockchain', () => {
       });
     });
 
-    describe('and the transaction data has at least one malformed outputmap', () => {
+    describe('and the transaction data has at least one malformed outputMap', () => {
       describe('and the transaction is not a reward transaction', () => {
         it('returns false and logs an error', () => {
           transaction.outputMap[wallet.publicKey] = 999999;
@@ -201,19 +203,17 @@ describe('Blockchain', () => {
 
           expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
-
         });
       });
 
       describe('and the transaction is a reward transaction', () => {
         it('returns false and logs an error', () => {
-          transaction.outputMap[wallet.publicKey] = 999999;
+          rewardTransaction.outputMap[wallet.publicKey] = 999999;
 
           newChain.addBlock({ data: [transaction, rewardTransaction] });
 
           expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false);
           expect(errorMock).toHaveBeenCalled();
-
         });
       });
     });
@@ -221,6 +221,7 @@ describe('Blockchain', () => {
     describe('and the transaction data has at least one malformed input', () => {
       it('returns false and logs an error', () => {
         wallet.balance = 9000;
+
         const evilOutputMap = {
           [wallet.publicKey]: 8900,
           fooRecipient: 100

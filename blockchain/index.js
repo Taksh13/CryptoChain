@@ -11,7 +11,7 @@ class Blockchain {
 
   addBlock({ data }) {
     const newBlock = Block.mineBlock({
-      lastBlock: this.chain[this.chain.length - 1],
+      lastBlock: this.chain[this.chain.length-1],
       data
     });
 
@@ -40,7 +40,7 @@ class Blockchain {
   }
 
   validTransactionData({ chain }) {
-    for (let i = 1; i < chain.length; i++) {
+    for (let i=1; i<chain.length; i++) {
       const block = chain[i];
       const transactionSet = new Set();
       let rewardTransactionCount = 0;
@@ -92,10 +92,10 @@ class Blockchain {
       return false
     };
 
-    for (let i = 1; i < chain.length; i++) {
+    for (let i=1; i<chain.length; i++) {
       const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[i];
-      const actualLastHash = chain[i - 1].hash;
-      const lastDifficulty = chain[i - 1].difficulty;
+      const actualLastHash = chain[i-1].hash;
+      const lastDifficulty = chain[i-1].difficulty;
 
       if (lastHash !== actualLastHash) return false;
 
